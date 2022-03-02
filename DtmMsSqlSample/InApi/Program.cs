@@ -6,13 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDtmcli(x => 
 {
     x.DtmUrl = "http://localhost:36789";
+
+    // 指定 子事务屏障 数据库类型为 sql server
+    x.DBType = DtmCommon.Constant.Barrier.DBTYPE_SQLSERVER;
+
+    // 指定 子事务屏障表
+    x.BarrierTableName = "[test].[dbo].[barrier]";
 });
-
-// 指定 子事务屏障 数据库类型为 sql server
-Dtmcli.DtmImp.DbSpecialDelegate.Instance.SetCurrentDBType("sqlserver");
-
-// 指定 子事务屏障表
-Dtmcli.BranchBarrier.SetBarrierTableName("[test].[dbo].[barrier]");
 
 var app = builder.Build();
 
@@ -35,7 +35,6 @@ app.MapPost("/api/TransInError", (string branch_id, string gid, string op, Trans
     Console.WriteLine($"用户【{req.UserId}】转入【{req.Amount}】正向操作--失败，gid={gid}, branch_id={branch_id}, op={op}");
 
     return Results.Ok(TransResponse.BuildFailureResponse());
-    //return Results.BadRequest();
 });
 
 int _errCount = 0;

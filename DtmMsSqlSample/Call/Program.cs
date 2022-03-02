@@ -39,9 +39,9 @@ Console.ReadKey();
 //        .Add(inApi + "/TransInError", inApi + "/BarrierTransInCompensate", userInReq)
 //        ;
 
-//    var flag = await saga.Submit(ct);
+//    await saga.Submit(ct);
 
-//    Console.WriteLine($"case3, {gid} saga 提交结果 = {flag}");
+//    Console.WriteLine($"case3, {gid} saga 提交");
 //}
 
 
@@ -58,7 +58,7 @@ async Task Case4(IDtmClient dtmClient)
         .Add(inApi + "/BarrierTransIn", inApi + "/BarrierTransInCompensate", userInReq)
         ;
 
-    var flag = await saga.Submit(ct);
+    await saga.Submit(ct);
 
-    Console.WriteLine($"case4, {gid} saga 提交结果 = {flag}");
+    Console.WriteLine($"case4, {gid} saga 提交");
 }
