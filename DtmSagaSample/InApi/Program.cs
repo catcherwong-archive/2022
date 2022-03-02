@@ -28,8 +28,9 @@ app.MapPost("/api/TransInError", (string branch_id, string gid, string op, Trans
 {
     Console.WriteLine($"用户【{req.UserId}】转入【{req.Amount}】正向操作--失败，gid={gid}, branch_id={branch_id}, op={op}");
 
-    return Results.Ok(TransResponse.BuildFailureResponse());
-    //return Results.BadRequest();
+    // status code = 409 || content contains FAILURE
+    //return Ok(TransResponse.BuildFailureResponse());
+    return Results.StatusCode(409);
 });
 
 int _errCount = 0;
