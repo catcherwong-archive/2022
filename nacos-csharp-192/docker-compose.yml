@@ -1,0 +1,22 @@
+version: '3.3'
+services:
+  nacos:
+    image: 'nacos/nacos-server:v2.0.3'
+    container_name: nacos-server-2.0.3
+    environment:
+      MODE: 'standalone'
+    ports:
+      - '8848:8848'
+      - '9848:9848'
+  sample:
+    depends_on:
+      - nacos
+    build:
+      dockerfile: ./Dockerfile
+      context: . 
+    image: sample:1.0.0
+    container_name: nacos-192-sample
+    ports:
+      - "9090:9090"  
+    environment:
+      Logging__Console__FormatterName:   

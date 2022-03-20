@@ -1,0 +1,4 @@
+dataSource:
+  DiSystem:
+    type: MySQL
+    configuration: server=mysql.storage.svc.clus
