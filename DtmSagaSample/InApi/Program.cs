@@ -10,36 +10,40 @@ builder.Services.AddDtmcli(x =>
 
 var app = builder.Build();
 
-app.MapPost("/api/TransIn", (string branch_id, string gid, string op, TransRequest req) =>
+app.MapPost("/api/TransIn", (HttpContext httpContext, TransRequest req) =>
 {
-    Console.WriteLine($"用户【{req.UserId}】转入【{req.Amount}】正向操作，gid={gid}, branch_id={branch_id}, op={op}");
+    Console.WriteLine($"TransIn, QueryString={httpContext.Request.QueryString}");
+    Console.WriteLine($"User: {req.UserId}, transfer in {req.Amount} --- forward");
 
     return Results.Ok(TransResponse.BuildSucceedResponse());
 });
 
-app.MapPost("/api/TransInCompensate", (string branch_id, string gid, string op, TransRequest req) =>
+app.MapPost("/api/TransInCompensate", (HttpContext httpContext, TransRequest req) =>
 {
-    Console.WriteLine($"用户【{req.UserId}】转入【{req.Amount}】补偿操作，gid={gid}, branch_id={branch_id}, op={op}");
+    Console.WriteLine($"TransInCompensate, QueryString={httpContext.Request.QueryString}");
+    Console.WriteLine($"User: {req.UserId}, transfer out {req.Amount} --- reverse compensation");
 
     return Results.Ok(TransResponse.BuildSucceedResponse());
 });
 
-app.MapPost("/api/TransInError", (string branch_id, string gid, string op, TransRequest req) =>
+app.MapPost("/api/TransInError", (HttpContext httpContext, TransRequest req) =>
 {
-    Console.WriteLine($"用户【{req.UserId}】转入【{req.Amount}】正向操作--失败，gid={gid}, branch_id={branch_id}, op={op}");
+    Console.WriteLine($"TransIn, QueryString={httpContext.Request.QueryString}");
+    Console.WriteLine($"User: {req.UserId}, transfer in {req.Amount} --- forward error!");
 
     // status code = 409 || content contains FAILURE
-    //return Ok(TransResponse.BuildFailureResponse());
+    // return Ok(TransResponse.BuildFailureResponse());
     return Results.StatusCode(409);
 });
 
 int _errCount = 0;
 
-app.MapPost("/api/BarrierTransIn", async (string branch_id, string gid, string op, string trans_type, TransRequest req, IBranchBarrierFactory factory) =>
+app.MapPost("/api/BarrierTransIn", async (HttpContext httpContext, TransRequest req, IBranchBarrierFactory factory) =>
 {
-    Console.WriteLine($"用户【{req.UserId}】转入【{req.Amount}】请求来了！！！ gid={gid}, branch_id={branch_id}, op={op}");
+    Console.WriteLine($"TransIn, QueryString={httpContext.Request.QueryString}");
+    Console.WriteLine($"User: {req.UserId}, transfer in {req.Amount} --- forward");
 
-    var barrier = factory.CreateBranchBarrier(trans_type, gid, branch_id, op);
+    var barrier = factory.CreateBranchBarrier(httpContext.Request.Query);
 
     using var db = Db.GeConn();
     await barrier.Call(db, async (tx) =>
@@ -48,29 +52,32 @@ app.MapPost("/api/BarrierTransIn", async (string branch_id, string gid, string o
 
         if (c > 0 && c < 2)
         {
-            // 模拟一个超时执行
+            // simulate network latency
+            // the first request should timeout
             await Task.Delay(10000);
         }
 
-        Console.WriteLine($"用户【{req.UserId}】转入【{req.Amount}】正向操作，gid={gid}, branch_id={branch_id}, op={op}");
-        // tx 参数是事务，可和本地事务一起提交回滚
+        Console.WriteLine($"User: {req.UserId}, transfer in {req.Amount} --- sub-transaction handle!");
+        
         await Task.CompletedTask;
     });
 
     return Results.Ok(TransResponse.BuildSucceedResponse());
 });
 
-
-app.MapPost("/api/BarrierTransInCompensate", async (string branch_id, string gid, string op, string trans_type, TransRequest req, IBranchBarrierFactory factory) =>
+app.MapPost("/api/BarrierTransInCompensate", async (HttpContext httpContext, TransRequest req, IBranchBarrierFactory factory) =>
 {
-    var barrier = factory.CreateBranchBarrier(trans_type, gid, branch_id, op);
+    Console.WriteLine($"TransIn, QueryString={httpContext.Request.QueryString}");
+
+    // create barrier from query
+    var barrier = factory.CreateBranchBarrier(httpContext.Request.Query);
 
     using var db = Db.GeConn();
     await barrier.Call(db, async (tx) =>
     {
-        // 转入失败的情况下，不应该输出下面这个
-        Console.WriteLine($"用户【{req.UserId}】转入【{req.Amount}】补偿操作，gid={gid}, branch_id={branch_id}, op={op}");
-        // tx 参数是事务，可和本地事务一起提交回滚
+        // some exception occure, should not output this one.
+        Console.WriteLine($"User: {req.UserId}, transfer in {req.Amount} --- sub-transaction handle!");
+
         await Task.CompletedTask;
     });
 
