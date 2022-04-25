@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HiveDemo", "HiveDemo\HiveDemo.csproj", "{DD25EFEC-AEB8-4B81-A08C-0C0F35B31D5D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DD25EFEC-AEB8-4B81-A08C-0C0F35B31D5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD25EFEC-AEB8-4B81-A08C-0C0F35B31D5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD25EFEC-AEB8-4B81-A08C-0C0F35B31D5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD25EFEC-AEB8-4B81-A08C-0C0F35B31D5D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2CE86643-59BC-482D-B696-517684C85BE7}
+	EndGlobalSection
+EndGlobal
